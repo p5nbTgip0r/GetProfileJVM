@@ -10,7 +10,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder
 data class SensitivityEntry(
         @JsonProperty("i")
         val iterator: Int,
-        val sensitivity: Int,
+        val sensitivity: Double,
         val offset: Int,
         val x: Int,
         val endOffset: Int,
