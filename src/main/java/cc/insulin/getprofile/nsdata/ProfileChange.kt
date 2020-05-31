@@ -18,7 +18,3 @@ data class ProfileChange(
         @JsonProperty("millis")
         val millis: Long
 )
-
-@JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
-data class ProfileStore(val key: String,
-                        val value: NSProfile)
