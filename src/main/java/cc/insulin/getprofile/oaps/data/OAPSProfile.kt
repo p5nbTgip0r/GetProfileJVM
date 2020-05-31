@@ -1,7 +1,7 @@
-package cc.insulin.getprofile.oapsdata
+package cc.insulin.getprofile.oaps.data
 
-import cc.insulin.getprofile.oapsdata.profile.BasalEntry
-import cc.insulin.getprofile.oapsdata.profile.ISFProfile
+import cc.insulin.getprofile.oaps.data.profile.BasalEntry
+import cc.insulin.getprofile.oaps.data.profile.ISFProfile
 import com.fasterxml.jackson.annotation.JsonAutoDetect
 import com.fasterxml.jackson.annotation.JsonProperty
 

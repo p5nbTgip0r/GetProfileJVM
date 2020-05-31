@@ -1,4 +1,4 @@
-package cc.insulin.getprofile.oapsdata.profile
+package cc.insulin.getprofile.oaps.data.profile
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect
 

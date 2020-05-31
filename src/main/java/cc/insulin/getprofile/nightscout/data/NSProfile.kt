@@ -1,6 +1,6 @@
-package cc.insulin.getprofile.nsdata
+package cc.insulin.getprofile.nightscout.data
 
-import cc.insulin.getprofile.nsdata.profile.ScheduleEntry
+import cc.insulin.getprofile.nightscout.data.profile.ScheduleEntry
 import com.fasterxml.jackson.annotation.JsonAutoDetect
 import com.fasterxml.jackson.annotation.JsonProperty
 
