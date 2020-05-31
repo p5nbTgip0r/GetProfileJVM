@@ -19,11 +19,11 @@ fun get() {
             .scheme("https")
             .host("ns.insulin.cc")
             .addPathSegments("api/v1/profile.json")
-            .addQueryParameter("token", System.getenv("TOKEN"))
             .build()
 
     val request = Request.Builder()
             .url(url)
+            .addHeader("api-secret", System.getenv("TOKEN"))
             .get()
             .build()
 
