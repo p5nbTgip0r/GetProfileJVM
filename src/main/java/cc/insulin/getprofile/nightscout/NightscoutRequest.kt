@@ -24,9 +24,8 @@ object NightscoutRequest {
     }
 }
 
-fun Request.Builder.addAuth(auth: String?): Request.Builder {
-    if (auth != null) {
-        return this.addHeader("api-secret", auth)
-    }
-    return this
+sealed class NightscoutResponse {
+    data class Success(val response: String) : NightscoutResponse()
+    data class Unauthorized(val message: String? = null) : NightscoutResponse()
+    data class Error(val cause: Exception? = null) : NightscoutResponse()
 }
