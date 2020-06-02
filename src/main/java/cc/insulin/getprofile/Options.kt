@@ -1,5 +1,6 @@
 package cc.insulin.getprofile
 
+import cc.insulin.getprofile.nightscout.data.Nightscout
 import picocli.CommandLine
 
 class Options {
@@ -15,4 +16,9 @@ class Options {
             arity = "0..1",
             interactive = true)
     var auth: String? = null
+
+    val nightscout: Nightscout
+        get() {
+            return Nightscout(nsUrl, auth)
+        }
 }
