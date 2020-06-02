@@ -9,5 +9,5 @@ fun main(args: Array<String>) {
     exitProcess(exitCode)
 }
 
-@CommandLine.Command(name = "getprofile", subcommands = [PrintCommand::class])
+@CommandLine.Command(name = "getprofile", subcommands = [PrintCommand::class, ConvertCommand::class])
 class MainCommand
