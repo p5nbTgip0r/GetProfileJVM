@@ -1,5 +1,7 @@
 package cc.insulin.getprofile
 
+import cc.insulin.getprofile.command.ConvertCommand
+import cc.insulin.getprofile.command.PrintCommand
 import picocli.CommandLine
 import kotlin.system.exitProcess
 

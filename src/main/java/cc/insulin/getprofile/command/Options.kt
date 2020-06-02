@@ -1,4 +1,4 @@
-package cc.insulin.getprofile
+package cc.insulin.getprofile.command
 
 import cc.insulin.getprofile.nightscout.data.Nightscout
 import picocli.CommandLine
