@@ -1,5 +1,6 @@
 package cc.insulin.getprofile.nightscout.data
 
+import cc.insulin.getprofile.data.GlucoseUnits
 import cc.insulin.getprofile.nightscout.data.profile.ScheduleEntry
 import com.fasterxml.jackson.annotation.JsonAutoDetect
 import com.fasterxml.jackson.annotation.JsonProperty
@@ -20,5 +21,5 @@ data class NSProfile(
         @JsonProperty("target_high")
         val targetHigh: List<ScheduleEntry>,
         val startDate: String,
-        val units: String = ""
+        val units: GlucoseUnits = GlucoseUnits.MGDL
 )
