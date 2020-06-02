@@ -1,34 +1,42 @@
 package cc.insulin.getprofile
 
 import cc.insulin.getprofile.nightscout.NightscoutRequest
+import cc.insulin.getprofile.nightscout.NightscoutResponse
 import cc.insulin.getprofile.nightscout.data.Nightscout
-import cc.insulin.getprofile.nightscout.data.ProfileChange
-import com.fasterxml.jackson.databind.DeserializationFeature
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.module.kotlin.KotlinModule
-import com.fasterxml.jackson.module.kotlin.readValue
+import org.apache.logging.log4j.kotlin.Logging
 import picocli.CommandLine
 import java.util.concurrent.Callable
 
 @CommandLine.Command(name = "print",
+        description = ["Prints the current profile to console"],
         mixinStandardHelpOptions = true,
         showDefaultValues = true)
-class PrintCommand : Callable<Int> {
+class PrintCommand : Callable<Int>, Logging {
     @CommandLine.Mixin
     lateinit var options: Options
 
     override fun call(): Int {
         val ns = Nightscout(options.nsUrl, options.auth)
 
-        val response = NightscoutRequest.getNightscoutProfile(ns)
+        when (val response = NightscoutRequest.fetchNightscoutProfile(ns)) {
+            is NightscoutResponse.Success -> {
+                val responseBody = response.response
 
-        val responseBody = response.body!!.string()
+                val profileChanges = Parser.parseProfileChanges(responseBody)
+                val profileChange = profileChanges!![0]
 
-        val mapperAll = ObjectMapper().registerModule(KotlinModule()).configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
-        val objData = mapperAll.readTree(responseBody).get(0).toPrettyString()
-        println(objData)
-        val profileChange: ProfileChange? = mapperAll.readValue(objData)
-        println(profileChange!!)
+                val defaultProfile = profileChange.store[profileChange.defaultProfile]!!
+                logger.info(defaultProfile)
+            }
+            is NightscoutResponse.Unauthorized -> {
+                logger.fatal("Authorization is not valid")
+            }
+            is NightscoutResponse.Error -> {
+                logger.fatal("Error occurred while fetching NS profile")
+                throw (response as? NightscoutResponse.Error)?.cause ?: Exception()
+            }
+        }
+
         return 1
     }
 }
