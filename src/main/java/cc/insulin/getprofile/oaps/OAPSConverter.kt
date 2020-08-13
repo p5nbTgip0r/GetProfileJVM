@@ -53,6 +53,7 @@ object OAPSConverter : Logging {
         val sens = convertSensitivity(nsProfile.sens, nsProfile.units)
         val isfProfile = ISFProfile(sens)
         // todo: support carb schedules
+        // todo: support custom curves
         val carbRatio = nsProfile.carbRatio[0].value.toDouble()
 
         val oapsProfile = OAPSProfile(8.0, nsProfile.dia.toDouble(), basal, isfProfile, carbRatio)

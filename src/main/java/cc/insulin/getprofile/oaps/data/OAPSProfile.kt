@@ -17,5 +17,8 @@ data class OAPSProfile(
         @JsonProperty("autosens_max")
         val autosensMax: Double = 1.2,
         @JsonProperty("autosens_min")
-        val autosensMin: Double = 0.7
+        val autosensMin: Double = 0.7,
+        val curve: String = "rapid-acting",
+        val useCustomPeakTime: Boolean = false,
+        val insulinPeakTime: Int = 75
 )
