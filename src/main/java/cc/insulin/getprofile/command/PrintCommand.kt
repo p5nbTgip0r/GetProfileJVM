@@ -9,7 +9,7 @@ import picocli.CommandLine
 import java.util.concurrent.Callable
 
 @CommandLine.Command(name = "print",
-        description = ["Prints the current profile to console"],
+        description = ["Prints the current Nightscout profile to console"],
         mixinStandardHelpOptions = true,
         showDefaultValues = true)
 class PrintCommand : Callable<Int>, Logging {
