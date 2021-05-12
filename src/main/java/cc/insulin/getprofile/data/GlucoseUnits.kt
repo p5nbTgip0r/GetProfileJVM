@@ -2,6 +2,7 @@ package cc.insulin.getprofile.data
 
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonValue
+import java.util.*
 
 
 enum class GlucoseUnits {
@@ -10,7 +11,7 @@ enum class GlucoseUnits {
     @JsonCreator
     fun forValue(value: String?): GlucoseUnits? {
         // use empty string if null
-        val input = value?.toLowerCase() ?: ""
+        val input = value?.lowercase(Locale.getDefault()) ?: ""
         val unit = with(input) {
             when {
                 contains("mmol") -> MMOL
