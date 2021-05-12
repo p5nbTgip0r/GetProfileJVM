@@ -6,7 +6,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder
 
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
 data class CarbRatios(
-        @JsonProperty("schedules")
+        @JsonProperty("schedule")
         val carbSchedule: List<ScheduleEntry>,
         val units: String = "grams"
 ) {
