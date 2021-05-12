@@ -2,19 +2,31 @@ package cc.insulin.getprofile.command
 
 import cc.insulin.getprofile.nightscout.data.Nightscout
 import picocli.CommandLine
+import java.io.File
 
 class Options {
-    @CommandLine.Option(required = true,
+    @CommandLine.Option(
+            names = ["-f", "-o", "--file", "--output"],
+            description = ["Output file"],
+            paramLabel = "FILE"
+    )
+    var outputFile: File? = null
+
+    @CommandLine.Option(
+            required = true,
             names = ["-u", "--nightscout"],
             description = ["Nightscout URL"],
-            paramLabel = "URL")
+            paramLabel = "URL"
+    )
     lateinit var nsUrl: String
 
-    @CommandLine.Option(names = ["-t", "--token", "--auth"],
+    @CommandLine.Option(
+            names = ["-t", "--token", "--auth"],
             description = ["API secret or token for Nightscout authentication"],
             paramLabel = "token/secret",
             arity = "0..1",
-            interactive = true)
+            interactive = true
+    )
     var auth: String? = null
 
     val nightscout: Nightscout
