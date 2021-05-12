@@ -12,7 +12,7 @@ fun Int.formatMinutes(): String {
 
 fun Request.Builder.addAuth(auth: String?): Request.Builder {
     if (auth != null) {
-        return this.addHeader("api-secret", auth)
+        return this.addHeader("api-secret", auth.replace("token=", ""))
     }
     return this
 }
