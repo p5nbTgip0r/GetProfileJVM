@@ -15,11 +15,11 @@ dependencies {
     implementation 'org.jetbrains.kotlin:kotlin-stdlib-jdk8'
     testImplementation 'org.jetbrains.kotlin:kotlin-test'
 
-    implementation 'org.apache.logging.log4j:log4j-core:2.11.1'
+    implementation 'org.apache.logging.log4j:log4j-core:2.14.1'
     implementation 'org.apache.logging.log4j:log4j-api-kotlin:1.0.0'
-    implementation 'com.squareup.okhttp3:okhttp:4.7.2'
-    implementation 'com.fasterxml.jackson.module:jackson-module-kotlin:2.11.0'
-    implementation 'info.picocli:picocli:4.3.2'
+    implementation 'com.squareup.okhttp3:okhttp:4.9.1'
+    implementation 'com.fasterxml.jackson.module:jackson-module-kotlin:2.12.+'
+    implementation 'info.picocli:picocli:4.6.1'
 }
 
 group = 'cc.insulin'
