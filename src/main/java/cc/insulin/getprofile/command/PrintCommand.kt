@@ -31,6 +31,7 @@ class PrintCommand : Callable<Int>, Logging {
             }
             is NightscoutResponse.Unauthorized -> {
                 logger.fatal("Authorization is not valid")
+                return 1
             }
             is NightscoutResponse.Error -> {
                 logger.fatal("Error occurred while fetching NS profile")
@@ -38,6 +39,6 @@ class PrintCommand : Callable<Int>, Logging {
             }
         }
 
-        return 1
+        return 0
     }
 }
