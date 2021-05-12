@@ -1,5 +1,6 @@
 package cc.insulin.getprofile.oaps.data
 
+import cc.insulin.getprofile.data.GlucoseUnits
 import cc.insulin.getprofile.oaps.data.profile.BasalEntry
 import cc.insulin.getprofile.oaps.data.profile.BgTargets
 import cc.insulin.getprofile.oaps.data.profile.CarbRatios
@@ -25,6 +26,8 @@ data class OAPSProfile(
         val autosensMax: Double = 1.2,
         @JsonProperty("autosens_min")
         val autosensMin: Double = 0.7,
+        @JsonProperty("out_units")
+        val outUnits: GlucoseUnits,
         val curve: String = "rapid-acting",
         val useCustomPeakTime: Boolean = false,
         val insulinPeakTime: Int = 75,

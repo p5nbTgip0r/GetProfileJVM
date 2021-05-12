@@ -9,6 +9,13 @@ import org.apache.logging.log4j.kotlin.Logging
 
 object OAPSConverter : Logging {
 
+    // autotune requires the profile to be in mg/dl, so this converts the units for usage in it
+    private fun mmolConvert(input: Double, units: GlucoseUnits, shouldConvert: Boolean = true): Double {
+        if (!shouldConvert || units == GlucoseUnits.MGDL) return input
+
+        return input * 18
+    }
+
     fun convertBasal(scheduleEntry: ScheduleEntry): BasalEntry {
         val rate = scheduleEntry.value.toDouble()
         val minutes = scheduleEntry.timeAsSeconds / 60
@@ -29,16 +36,11 @@ object OAPSConverter : Logging {
         return basalEntries
     }
 
-    // todo: allow not converting units
     // todo: support multiple sensitivity times
-    fun convertSensitivity(entries: List<ScheduleEntry>, units: GlucoseUnits): List<SensitivityEntry> {
+    fun convertSensitivity(entries: List<ScheduleEntry>, units: GlucoseUnits, convertMmol: Boolean): List<SensitivityEntry> {
         val sensitivityEntries = mutableListOf<SensitivityEntry>()
         val nsEntry = entries[0]
-        var sens = nsEntry.value.toDouble()
-        if (units == GlucoseUnits.MMOL) {
-            // autotune requires the profile to be in mg/dl, so we must convert the units
-            sens *= 18
-        }
+        val sens = mmolConvert(nsEntry.value.toDouble(), units, convertMmol)
         val newEntry = SensitivityEntry(0, sens, 0, 0, 1440)
         sensitivityEntries.add(newEntry)
 
@@ -46,12 +48,17 @@ object OAPSConverter : Logging {
         return sensitivityEntries
     }
 
-    fun convertTargets(lowTargets: List<ScheduleEntry>, highTargets: List<ScheduleEntry>, units: GlucoseUnits): BgTargets {
+    fun convertTargets(
+            lowTargets: List<ScheduleEntry>,
+            highTargets: List<ScheduleEntry>,
+            units: GlucoseUnits,
+            convertMmol: Boolean
+    ): BgTargets {
         val targets = lowTargets.associate { entry ->
-            val lowBg = entry.value
-            val highBg = highTargets.first { it.time == entry.time }.value
+            val lowBg = mmolConvert(entry.value.toDouble(), units, convertMmol)
+            val highBg = mmolConvert(highTargets.first { it.time == entry.time }.value.toDouble(), units, convertMmol)
 
-            entry.time + ":00" to (highBg.toDouble() to lowBg.toDouble())
+            entry.time + ":00" to (highBg to lowBg)
         }.map {
             BgTargets.Target(
                     maxBg = it.value.first,
@@ -60,7 +67,9 @@ object OAPSConverter : Logging {
             )
         }
 
-        return BgTargets(targets = targets, userPreferredUnits = units)
+        val displayedUnits = if (convertMmol && units == GlucoseUnits.MMOL) GlucoseUnits.MGDL else units
+
+        return BgTargets(targets = targets, units = displayedUnits, userPreferredUnits = units)
     }
 
     fun convertCarbRatios(ratios: List<ScheduleEntry>): List<CarbRatios.ScheduleEntry> {
@@ -69,12 +78,14 @@ object OAPSConverter : Logging {
         }
     }
 
-    fun convertProfile(nsProfile: NSProfile): OAPSProfile {
+    fun convertProfile(nsProfile: NSProfile, convertMmol: Boolean = false): OAPSProfile {
+        val displayedUnits = if (convertMmol) GlucoseUnits.MGDL else nsProfile.units
+
         val basal = convertBasals(nsProfile.basal)
-        val sens = convertSensitivity(nsProfile.sens, nsProfile.units)
-        val isfProfile = ISFProfile(sens)
+        val sens = convertSensitivity(nsProfile.sens, nsProfile.units, convertMmol)
+        val isfProfile = ISFProfile(sens, displayedUnits, nsProfile.units)
         // todo: support custom insulin curves and peak times
-        val targets = convertTargets(nsProfile.targetLow, nsProfile.targetHigh, nsProfile.units)
+        val targets = convertTargets(nsProfile.targetLow, nsProfile.targetHigh, nsProfile.units, convertMmol)
         val carbRatio = nsProfile.carbRatio[0].value.toDouble()
         val carbRatios = CarbRatios(convertCarbRatios(nsProfile.carbRatio))
 
@@ -86,6 +97,7 @@ object OAPSConverter : Logging {
                 bgTargets = targets,
                 carbRatios = carbRatios,
                 carbRatio = carbRatio,
+                outUnits = nsProfile.units,
                 timezone = nsProfile.timezone
         )
         logger.debug("OpenAPS-converted profile: $oapsProfile")

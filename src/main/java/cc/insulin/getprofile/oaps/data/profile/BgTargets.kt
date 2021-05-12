@@ -9,9 +9,9 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder
 data class BgTargets(
         val first: Int = 1,
         val targets: List<Target>,
+        val units: GlucoseUnits,
         @JsonProperty("user_preferred_units")
-        val userPreferredUnits: GlucoseUnits,
-        val units: GlucoseUnits = userPreferredUnits
+        val userPreferredUnits: GlucoseUnits = units
 ) {
     @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
     @JsonPropertyOrder("max_bg", "min_bg", "x", "offset", "low", "start", "high", "i")

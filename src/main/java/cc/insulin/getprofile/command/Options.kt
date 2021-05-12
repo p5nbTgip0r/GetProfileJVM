@@ -6,6 +6,12 @@ import java.io.File
 
 class Options {
     @CommandLine.Option(
+            names = ["-m", "--convert-mmol"],
+            description = ["Convert glucose values from mmol/L to mg/dL in the output"]
+    )
+    var convertMmol: Boolean = false
+
+    @CommandLine.Option(
             names = ["-f", "-o", "--file", "--output"],
             description = ["Output file"],
             paramLabel = "FILE"
