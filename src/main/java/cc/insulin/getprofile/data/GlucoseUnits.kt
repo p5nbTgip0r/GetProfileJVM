@@ -9,7 +9,7 @@ enum class GlucoseUnits {
     MGDL, MMOL;
 
     @JsonCreator
-    fun forValue(value: String?): GlucoseUnits? {
+    fun forValue(value: String?): GlucoseUnits {
         // use empty string if null
         val input = value?.lowercase(Locale.getDefault()) ?: ""
         val unit = with(input) {
