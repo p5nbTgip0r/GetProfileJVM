@@ -4,10 +4,7 @@ import cc.insulin.getprofile.data.GlucoseUnits
 import cc.insulin.getprofile.nightscout.data.NSProfile
 import cc.insulin.getprofile.nightscout.data.profile.ScheduleEntry
 import cc.insulin.getprofile.oaps.data.OAPSProfile
-import cc.insulin.getprofile.oaps.data.profile.BasalEntry
-import cc.insulin.getprofile.oaps.data.profile.BgTargets
-import cc.insulin.getprofile.oaps.data.profile.ISFProfile
-import cc.insulin.getprofile.oaps.data.profile.SensitivityEntry
+import cc.insulin.getprofile.oaps.data.profile.*
 import org.apache.logging.log4j.kotlin.Logging
 
 object OAPSConverter : Logging {
@@ -66,14 +63,20 @@ object OAPSConverter : Logging {
         return BgTargets(targets = targets, userPreferredUnits = units)
     }
 
+    fun convertCarbRatios(ratios: List<ScheduleEntry>): List<CarbRatios.ScheduleEntry> {
+        return ratios.map {
+            CarbRatios.ScheduleEntry(it.value.toDouble(), it.time + ":00")
+        }
+    }
+
     fun convertProfile(nsProfile: NSProfile): OAPSProfile {
         val basal = convertBasals(nsProfile.basal)
         val sens = convertSensitivity(nsProfile.sens, nsProfile.units)
         val isfProfile = ISFProfile(sens)
-        // todo: support carb schedules
         // todo: support custom insulin curves and peak times
         val targets = convertTargets(nsProfile.targetLow, nsProfile.targetHigh, nsProfile.units)
         val carbRatio = nsProfile.carbRatio[0].value.toDouble()
+        val carbRatios = CarbRatios(convertCarbRatios(nsProfile.carbRatio))
 
         val oapsProfile = OAPSProfile(
                 min5mCarbImpact = 8.0,
@@ -81,6 +84,7 @@ object OAPSConverter : Logging {
                 basalProfile = basal,
                 isfProfile = isfProfile,
                 bgTargets = targets,
+                carbRatios = carbRatios,
                 carbRatio = carbRatio,
                 timezone = nsProfile.timezone
         )
