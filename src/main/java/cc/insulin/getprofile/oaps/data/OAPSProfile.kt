@@ -13,6 +13,7 @@ data class OAPSProfile(
         @JsonProperty("basalprofile")
         val basalProfile: List<BasalEntry>,
         val isfProfile: ISFProfile,
+        @JsonProperty("carb_ratio")
         val carbRatio: Double,
         @JsonProperty("autosens_max")
         val autosensMax: Double = 1.2,
@@ -20,5 +21,6 @@ data class OAPSProfile(
         val autosensMin: Double = 0.7,
         val curve: String = "rapid-acting",
         val useCustomPeakTime: Boolean = false,
-        val insulinPeakTime: Int = 75
+        val insulinPeakTime: Int = 75,
+        val timezone: String
 )

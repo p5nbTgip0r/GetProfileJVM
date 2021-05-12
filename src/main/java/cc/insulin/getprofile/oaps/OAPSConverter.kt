@@ -53,10 +53,17 @@ object OAPSConverter : Logging {
         val sens = convertSensitivity(nsProfile.sens, nsProfile.units)
         val isfProfile = ISFProfile(sens)
         // todo: support carb schedules
-        // todo: support custom curves
+        // todo: support custom insulin curves and peak times
         val carbRatio = nsProfile.carbRatio[0].value.toDouble()
 
-        val oapsProfile = OAPSProfile(8.0, nsProfile.dia.toDouble(), basal, isfProfile, carbRatio)
+        val oapsProfile = OAPSProfile(
+                min5mCarbImpact = 8.0,
+                dia = nsProfile.dia.toDouble(),
+                basalProfile = basal,
+                isfProfile = isfProfile,
+                carbRatio = carbRatio,
+                timezone = nsProfile.timezone
+        )
         logger.debug("OpenAPS-converted profile: $oapsProfile")
         return oapsProfile
     }
