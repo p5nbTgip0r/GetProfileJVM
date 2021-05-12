@@ -5,6 +5,7 @@ import cc.insulin.getprofile.nightscout.data.NSProfile
 import cc.insulin.getprofile.nightscout.data.profile.ScheduleEntry
 import cc.insulin.getprofile.oaps.data.OAPSProfile
 import cc.insulin.getprofile.oaps.data.profile.BasalEntry
+import cc.insulin.getprofile.oaps.data.profile.BgTargets
 import cc.insulin.getprofile.oaps.data.profile.ISFProfile
 import cc.insulin.getprofile.oaps.data.profile.SensitivityEntry
 import org.apache.logging.log4j.kotlin.Logging
@@ -48,12 +49,30 @@ object OAPSConverter : Logging {
         return sensitivityEntries
     }
 
+    fun convertTargets(lowTargets: List<ScheduleEntry>, highTargets: List<ScheduleEntry>, units: GlucoseUnits): BgTargets {
+        val targets = lowTargets.associate { entry ->
+            val lowBg = entry.value
+            val highBg = highTargets.first { it.time == entry.time }.value
+
+            entry.time + ":00" to (highBg.toDouble() to lowBg.toDouble())
+        }.map {
+            BgTargets.Target(
+                    maxBg = it.value.first,
+                    minBg = it.value.second,
+                    start = it.key
+            )
+        }
+
+        return BgTargets(targets = targets, userPreferredUnits = units)
+    }
+
     fun convertProfile(nsProfile: NSProfile): OAPSProfile {
         val basal = convertBasals(nsProfile.basal)
         val sens = convertSensitivity(nsProfile.sens, nsProfile.units)
         val isfProfile = ISFProfile(sens)
         // todo: support carb schedules
         // todo: support custom insulin curves and peak times
+        val targets = convertTargets(nsProfile.targetLow, nsProfile.targetHigh, nsProfile.units)
         val carbRatio = nsProfile.carbRatio[0].value.toDouble()
 
         val oapsProfile = OAPSProfile(
@@ -61,6 +80,7 @@ object OAPSConverter : Logging {
                 dia = nsProfile.dia.toDouble(),
                 basalProfile = basal,
                 isfProfile = isfProfile,
+                bgTargets = targets,
                 carbRatio = carbRatio,
                 timezone = nsProfile.timezone
         )
