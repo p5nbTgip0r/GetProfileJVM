@@ -35,7 +35,7 @@ class PrintCommand : Callable<Int>, Logging {
             }
             is NightscoutResponse.Error -> {
                 logger.fatal("Error occurred while fetching NS profile")
-                throw (response as? NightscoutResponse.Error)?.cause ?: Exception()
+                throw response.cause ?: Exception()
             }
         }
 
