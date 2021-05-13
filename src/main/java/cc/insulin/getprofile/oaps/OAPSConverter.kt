@@ -6,6 +6,7 @@ import cc.insulin.getprofile.nightscout.data.profile.ScheduleEntry
 import cc.insulin.getprofile.oaps.data.OAPSProfile
 import cc.insulin.getprofile.oaps.data.profile.*
 import org.apache.logging.log4j.kotlin.Logging
+import kotlin.math.roundToInt
 
 class OAPSConverter(
     private val units: GlucoseUnits,
@@ -24,7 +25,7 @@ class OAPSConverter(
     private fun mmolConvert(input: Number): Number {
         if (!convertMmol || units == GlucoseUnits.MGDL) return input
 
-        return input.toDouble() * 18
+        return (input.toDouble() * 18).roundToInt()
     }
 
     fun convertBasal(scheduleEntry: ScheduleEntry): BasalEntry {
@@ -99,14 +100,18 @@ class OAPSConverter(
             min5mCarbImpact = 8.0,
                 dia = nsProfile.dia.toDouble(),
                 basalProfile = basal,
-                isfProfile = isfProfile,
-                bgTargets = targets,
-                carbRatios = carbRatios,
-                carbRatio = carbRatio,
-                outUnits = nsProfile.units,
-                timezone = nsProfile.timezone
+            isfProfile = isfProfile,
+            bgTargets = targets,
+            carbRatios = carbRatios,
+            carbRatio = carbRatio,
+            outUnits = nsProfile.units,
+            timezone = nsProfile.timezone
         )
         logger.debug("OpenAPS-converted profile: $oapsProfile")
         return oapsProfile
+    }
+
+    override fun toString(): String {
+        return "OAPSConverter(units=$units, convertMmol=$convertMmol)"
     }
 }
