@@ -33,7 +33,7 @@ sourceSets {
 
 shadowJar {
     archiveBaseName.set('GetProfile')
-    archiveClassifier.set('')
+    archiveClassifier.set('full')
     manifest {
         attributes 'Main-Class': 'cc.insulin.getprofile.MainKt'
     }
