@@ -7,13 +7,21 @@ import cc.insulin.getprofile.oaps.data.OAPSProfile
 import cc.insulin.getprofile.oaps.data.profile.*
 import org.apache.logging.log4j.kotlin.Logging
 
-object OAPSConverter : Logging {
+class OAPSConverter(val units: GlucoseUnits, val convertMmol: Boolean = true) : Logging {
+    private val displayedUnits = if (convertMmol) GlucoseUnits.MGDL else units
+
+    private fun String.toBg(): Number {
+        return when (units) {
+            GlucoseUnits.MGDL -> toInt()
+            GlucoseUnits.MMOL -> mmolConvert(toDouble())
+        }
+    }
 
     // autotune requires the profile to be in mg/dl, so this converts the units for usage in it
-    private fun mmolConvert(input: Double, units: GlucoseUnits, shouldConvert: Boolean = true): Double {
-        if (!shouldConvert || units == GlucoseUnits.MGDL) return input
+    private fun mmolConvert(input: Number): Number {
+        if (!convertMmol || units == GlucoseUnits.MGDL) return input
 
-        return input * 18
+        return input.toDouble() * 18
     }
 
     fun convertBasal(scheduleEntry: ScheduleEntry): BasalEntry {
@@ -37,10 +45,11 @@ object OAPSConverter : Logging {
     }
 
     // todo: support multiple sensitivity times
-    fun convertSensitivity(entries: List<ScheduleEntry>, units: GlucoseUnits, convertMmol: Boolean): List<SensitivityEntry> {
+    fun convertSensitivity(entries: List<ScheduleEntry>): List<SensitivityEntry> {
         val sensitivityEntries = mutableListOf<SensitivityEntry>()
         val nsEntry = entries[0]
-        val sens = mmolConvert(nsEntry.value.toDouble(), units, convertMmol)
+        // this will always be a double since we're inputting a double
+        val sens = mmolConvert(nsEntry.value.toDouble()) as Double
         val newEntry = SensitivityEntry(0, sens, 0, 0, 1440)
         sensitivityEntries.add(newEntry)
 
@@ -51,12 +60,10 @@ object OAPSConverter : Logging {
     fun convertTargets(
             lowTargets: List<ScheduleEntry>,
             highTargets: List<ScheduleEntry>,
-            units: GlucoseUnits,
-            convertMmol: Boolean
     ): BgTargets {
         val targets = lowTargets.associate { entry ->
-            val lowBg = mmolConvert(entry.value.toDouble(), units, convertMmol)
-            val highBg = mmolConvert(highTargets.first { it.time == entry.time }.value.toDouble(), units, convertMmol)
+            val lowBg = entry.value.toBg().toDouble()
+            val highBg = highTargets.first { it.time == entry.time }.value.toBg().toDouble()
 
             entry.time + ":00" to (highBg to lowBg)
         }.map {
@@ -67,8 +74,6 @@ object OAPSConverter : Logging {
             )
         }
 
-        val displayedUnits = if (convertMmol && units == GlucoseUnits.MMOL) GlucoseUnits.MGDL else units
-
         return BgTargets(targets = targets, units = displayedUnits, userPreferredUnits = units)
     }
 
@@ -78,19 +83,17 @@ object OAPSConverter : Logging {
         }
     }
 
-    fun convertProfile(nsProfile: NSProfile, convertMmol: Boolean = false): OAPSProfile {
-        val displayedUnits = if (convertMmol) GlucoseUnits.MGDL else nsProfile.units
-
+    fun convertProfile(nsProfile: NSProfile): OAPSProfile {
         val basal = convertBasals(nsProfile.basal)
-        val sens = convertSensitivity(nsProfile.sens, nsProfile.units, convertMmol)
+        val sens = convertSensitivity(nsProfile.sens)
         val isfProfile = ISFProfile(sens, displayedUnits, nsProfile.units)
         // todo: support custom insulin curves and peak times
-        val targets = convertTargets(nsProfile.targetLow, nsProfile.targetHigh, nsProfile.units, convertMmol)
+        val targets = convertTargets(nsProfile.targetLow, nsProfile.targetHigh)
         val carbRatio = nsProfile.carbRatio[0].value.toDouble()
         val carbRatios = CarbRatios(convertCarbRatios(nsProfile.carbRatio))
 
         val oapsProfile = OAPSProfile(
-                min5mCarbImpact = 8.0,
+            min5mCarbImpact = 8.0,
                 dia = nsProfile.dia.toDouble(),
                 basalProfile = basal,
                 isfProfile = isfProfile,

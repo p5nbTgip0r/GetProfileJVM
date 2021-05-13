@@ -32,7 +32,7 @@ class ConvertCommand : Callable<Int>, Logging {
                 val profileChange = profileChanges!![0]
                 val defaultProfile = profileChange.store[profileChange.defaultProfile]!!
 
-                val oaps = OAPSConverter.convertProfile(defaultProfile, options.noConvertMmol)
+                val oaps = OAPSConverter(defaultProfile.units, !options.noConvertMmol).convertProfile(defaultProfile)
                 val profileAsString = prettyPrinter.writeValueAsString(oaps)
                 logger.info(profileAsString)
                 if (options.outputFile != null) {
