@@ -7,7 +7,10 @@ import cc.insulin.getprofile.oaps.data.OAPSProfile
 import cc.insulin.getprofile.oaps.data.profile.*
 import org.apache.logging.log4j.kotlin.Logging
 
-class OAPSConverter(val units: GlucoseUnits, val convertMmol: Boolean = true) : Logging {
+class OAPSConverter(
+    private val units: GlucoseUnits,
+    private val convertMmol: Boolean = true
+) : Logging {
     private val displayedUnits = if (convertMmol) GlucoseUnits.MGDL else units
 
     private fun String.toBg(): Number {
