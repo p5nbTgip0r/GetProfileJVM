@@ -1,7 +1,9 @@
 plugins {
     id 'java'
     id 'org.jetbrains.kotlin.jvm' version '1.5.0'
+    id "org.jetbrains.kotlin.kapt" version "1.5.0"
     id 'com.github.johnrengelman.shadow' version '7.0.0'
+    id "org.mikeneck.graalvm-native-image" version "1.3.0"
 }
 
 repositories {
@@ -20,22 +22,62 @@ dependencies {
     implementation 'org.apache.logging.log4j:log4j-api-kotlin:1.0.0'
     implementation 'com.squareup.okhttp3:okhttp:4.9.1'
     implementation 'com.fasterxml.jackson.module:jackson-module-kotlin:2.12.+'
+
     implementation 'info.picocli:picocli:4.6.1'
+    kapt 'info.picocli:picocli-codegen:4.6.1'
 }
 
 group = 'cc.insulin'
 version = '1.2.0'
 description = 'GetProfile'
 
+kapt {
+    arguments {
+        arg("project", "${project.group}/${project.name}")
+    }
+}
+
 sourceSets {
     main.kotlin.srcDirs += 'src/main/java'
     test.kotlin.srcDirs += 'src/main/java'
+}
+
+nativeImage {
+    graalVmHome = "/usr/lib/jvm/default/"
+    mainClass = 'cc.insulin.getprofile.Main'
+    executableName = 'getprofile'
+    outputDirectory = file("$buildDir/bin")
+    arguments {
+        add '-H:JNIConfigurationFiles=graalvm-native-config/jni-config.json'
+        add '-H:ReflectionConfigurationFiles=graalvm-native-config/reflect-config.json'
+        add '-H:ResourceConfigurationFiles=graalvm-native-config/resource-config.json'
+        add '--no-fallback'
+        add '--allow-incomplete-classpath'
+        add '--report-unsupported-elements-at-runtime'
+    }
+}
+
+generateNativeImageConfig {
+    enabled = true
+    byRunningApplicationWithoutArguments()
+
+    // (I know this isn't elegant. I'll come up with a solution later)
+    // If the native image configuration needs to be re-generated:
+    // - make a duplicate of the commented `byRunningApplication` block below, then uncomment the duplicate you just made
+    // - fill your Nightscout details into your uncommented duplicate
+    // - run the task `:generateNativeImageConfig`
+    // - move the files in `/build/native-image-config/` to `/graalvm-native-config/`
+    // - delete the duplicated block you made
+
+    //    byRunningApplication {
+    //        arguments('convert', '-u=https://your-nightscout/', '-t', 'token or api secret', '-f', 'profile.json')
+    //    }
 }
 
 shadowJar {
     archiveBaseName.set('GetProfile')
     archiveClassifier.set('full')
     manifest {
-        attributes 'Main-Class': 'cc.insulin.getprofile.MainKt'
+        attributes 'Main-Class': 'cc.insulin.getprofile.Main'
     }
 }

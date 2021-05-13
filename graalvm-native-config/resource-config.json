@@ -1,0 +1,71 @@
+{
+  "resources": {
+    "includes": [
+      {
+        "pattern": "\\QMETA-INF/org/apache/logging/log4j/core/config/plugins/Log4j2Plugins.dat\\E"
+      },
+      {
+        "pattern": "\\QMETA-INF/services/javax.script.ScriptEngineFactory\\E"
+      },
+      {
+        "pattern": "\\QMETA-INF/services/jdk.vm.ci.hotspot.HotSpotJVMCIBackendFactory\\E"
+      },
+      {
+        "pattern": "\\QMETA-INF/services/jdk.vm.ci.services.JVMCIServiceLocator\\E"
+      },
+      {
+        "pattern": "\\QMETA-INF/services/kotlin.reflect.jvm.internal.impl.builtins.BuiltInsLoader\\E"
+      },
+      {
+        "pattern": "\\QMETA-INF/services/kotlin.reflect.jvm.internal.impl.resolve.ExternalOverridabilityCondition\\E"
+      },
+      {
+        "pattern": "\\QMETA-INF/services/org.apache.logging.log4j.core.util.ContextDataProvider\\E"
+      },
+      {
+        "pattern": "\\QMETA-INF/services/org.apache.logging.log4j.spi.Provider\\E"
+      },
+      {
+        "pattern": "\\QMETA-INF/services/org.apache.logging.log4j.util.PropertySource\\E"
+      },
+      {
+        "pattern": "\\Qjavax/crypto/Cipher.class\\E"
+      },
+      {
+        "pattern": "\\Qkotlin/annotation/annotation.kotlin_builtins\\E"
+      },
+      {
+        "pattern": "\\Qkotlin/collections/collections.kotlin_builtins\\E"
+      },
+      {
+        "pattern": "\\Qkotlin/coroutines/coroutines.kotlin_builtins\\E"
+      },
+      {
+        "pattern": "\\Qkotlin/internal/internal.kotlin_builtins\\E"
+      },
+      {
+        "pattern": "\\Qkotlin/kotlin.kotlin_builtins\\E"
+      },
+      {
+        "pattern": "\\Qkotlin/ranges/ranges.kotlin_builtins\\E"
+      },
+      {
+        "pattern": "\\Qkotlin/reflect/reflect.kotlin_builtins\\E"
+      },
+      {
+        "pattern": "\\Qlog4j2.xml\\E"
+      },
+      {
+        "pattern": "\\Qsun/net/idn/uidna.spp\\E"
+      },
+      {
+        "pattern": "\\Qsun/text/resources/LineBreakIteratorData\\E"
+      },
+      {
+        "pattern": "\\Qsun/text/resources/unorm.icu\\E"
+      }
+    ],
+    "excludes": []
+  },
+  "bundles": []
+}
