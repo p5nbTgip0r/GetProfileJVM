@@ -16,15 +16,15 @@ data class BgTargets(
     @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
     @JsonPropertyOrder("max_bg", "min_bg", "x", "offset", "low", "start", "high", "i")
     data class Target(
-            @JsonProperty("max_bg")
-            val maxBg: Double,
-            @JsonProperty("min_bg")
-            val minBg: Double,
-            val start: String,
-            val low: Double = minBg,
-            val high: Double = maxBg,
-            val offset: Int = 0,
-            val x: Int = 0,
-            val i: Int = 0
+        @JsonProperty("max_bg")
+        val maxBg: Number,
+        @JsonProperty("min_bg")
+        val minBg: Number,
+        val start: String,
+        val low: Number = minBg,
+        val high: Number = maxBg,
+        val offset: Int = 0,
+        val x: Int = 0,
+        val i: Int = 0
     )
 }

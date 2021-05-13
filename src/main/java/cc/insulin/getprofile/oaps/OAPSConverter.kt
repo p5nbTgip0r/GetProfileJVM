@@ -62,8 +62,8 @@ class OAPSConverter(val units: GlucoseUnits, val convertMmol: Boolean = true) : 
             highTargets: List<ScheduleEntry>,
     ): BgTargets {
         val targets = lowTargets.associate { entry ->
-            val lowBg = entry.value.toBg().toDouble()
-            val highBg = highTargets.first { it.time == entry.time }.value.toBg().toDouble()
+            val lowBg = entry.value.toBg()
+            val highBg = highTargets.first { it.time == entry.time }.value.toBg()
 
             entry.time + ":00" to (highBg to lowBg)
         }.map {
